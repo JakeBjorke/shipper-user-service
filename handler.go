@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	pb "github.com/jakebjorke/shipper/user-service/proto/user"
+	pb "github.com/jakebjorke/shipper-user-service/proto/user"
 )
 
 type service struct {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	pb "github.com/jakebjorke/shipper/user-service/proto/user"
+	pb "github.com/jakebjorke/shipper-user-service/proto/user"
 	"github.com/micro/go-micro"
 )
 
