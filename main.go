@@ -8,9 +8,6 @@ import (
 	"github.com/micro/go-micro"
 )
 
-//Authable is temp for the time being.
-type Authable struct{}
-
 func main() {
 	db, err := CreateConnection()
 	defer db.Close()

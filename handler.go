@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"log"
 
 	pb "github.com/jakebjorke/shipper-user-service/proto/user"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type service struct {
@@ -35,18 +37,35 @@ func (srv *service) GetAll(ctx context.Context, req *pb.Request, res *pb.Respons
 
 //Auth is used to authenticate a user.
 func (srv *service) Auth(ctx context.Context, req *pb.User, res *pb.Token) error {
-	_, err := srv.repo.GetByEmailAndPassword(req)
+	log.Println("Logging in with:", req.Email, req.Password)
+	user, err := srv.repo.GetByEmail(req.Email)
+	log.Println(user)
 	if err != nil {
 		return err
 	}
 
-	//ignoring for the most part.
-	res.Token = "testingabc"
+	//Compares our given password against the hashed password from the DB
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		return err
+	}
+
+	token, err := srv.tokenService.Encode(user)
+	if err != nil {
+		return err
+	}
+
+	res.Token = token
 	return nil
 }
 
 //Create is used to create a new user
 func (srv *service) Create(ctx context.Context, req *pb.User, res *pb.Response) error {
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	req.Password = string(hashedPass)
 	if err := srv.repo.Create(req); err != nil {
 		return err
 	}
