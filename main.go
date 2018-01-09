@@ -22,7 +22,7 @@ func main() {
 	srv := micro.NewService(micro.Name("go.micro.srv.user"), micro.Version("latest"))
 	srv.Init()
 
-	pb.RegisterUserServiceHandler(srv.Server(), &service{repo, Authable{}})
+	pb.RegisterUserServiceHandler(srv.Server(), &service{repo, &TokenService{repo}})
 
 	if err := srv.Run(); err != nil {
 		fmt.Println(err)
